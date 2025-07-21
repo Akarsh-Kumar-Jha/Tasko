@@ -188,19 +188,20 @@ const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_REFRESH, {
       expiresIn: "5d",
     });
 
-    return res
-      .cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        expires:new Date(Date.now() + 2 * 60 * 60 *1000),
-        sameSite: "Strict"
-      })
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        expires:new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-        sameSite: "Strict"
-      })
+ res.cookie("accessToken", accessToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "None",
+  expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+});
+
+res.cookie("refreshToken", refreshToken, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "None",
+  expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+});
+
       .json({
         success: true,
         message: "User LoggedIn SuccessFully!",
@@ -246,7 +247,7 @@ const payload = {
         httpOnly: true,
         secure: true,
         expires:new Date(Date.now() + 2 * 60 * 60 *1000),
-        sameSite: "Strict"
+        sameSite: "None"
       }).json({
         success:true,
         message:"Access Token Refreshed Successfully!"
