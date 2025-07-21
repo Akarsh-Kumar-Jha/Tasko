@@ -29,7 +29,7 @@ function Login() {
 
       console.log("Res Data In LogIn.jsx",res);
       toast.success("✅ Logged in successfully!");
-      navigate("/home");
+      navigate("/");
     } catch (err) {
       toast.error(err.response?.data?.message || "❌ Login failed! Check your credentials.");
       setApiCalled(false);
