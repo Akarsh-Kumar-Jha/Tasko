@@ -188,21 +188,20 @@ const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_REFRESH, {
       expiresIn: "5d",
     });
 
- res.cookie("accessToken", accessToken, {
+return res
+  .cookie("accessToken", accessToken, {
   httpOnly: true,
   secure: true,
   sameSite: "None",
   expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
-});
-
-res.cookie("refreshToken", refreshToken, {
+})
+  .cookie("refreshToken", refreshToken, {
   httpOnly: true,
   secure: true,
   sameSite: "None",
   expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-});
-
-      .json({
+})
+  .json({
         success: true,
         message: "User LoggedIn SuccessFully!",
         AccessToken:accessToken,
