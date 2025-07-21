@@ -3,8 +3,8 @@ import { toast } from "sonner";
 
 
 const axiosInstance = axios.create({
-    baseURL:`http://localhost:3000/api/v1`,
-    withCredentials:true
+  baseURL: 'https://tasko-backendnew.onrender.com/api/v1',
+  withCredentials: true,
 });
 
 axiosInstance.interceptors.response.use(
