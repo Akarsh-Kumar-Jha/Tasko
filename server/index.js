@@ -103,8 +103,10 @@ app.use(cookieParser());
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://tasko-frontend-p3y7.onrender.com",
+  "https://tasko-frontendnew.onrender.com",
+  "https://tasko-frontend-p3y7.onrender.com"
 ];
+
 
 app.use(
   cors({
