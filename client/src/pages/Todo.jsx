@@ -153,190 +153,152 @@ function Todo() {
   }, []);
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center text-foreground px-2 relative"
-      style={{
-        background: "linear-gradient(120deg, #0f2027, #203a43, #2c5364)",
-      }}
+ <div
+  className="min-h-screen overflow-y-auto flex flex-col items-center justify-center px-2 relative bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white font-outfit"
+>
+  {apiCalled && (
+    <div className="absolute inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+      <span className="relative flex h-14 w-14">
+        <span className="animate-spin rounded-full border-[5px] border-white/10 border-r-blue-400 w-full h-full" />
+      </span>
+    </div>
+  )}
+
+  {/* Floating Action Buttons */}
+  <div className="absolute top-5 left-4 z-50">
+    <Button
+      onClick={() => navigate(-1)}
+      className="bg-white/10 hover:bg-blue-500/30 text-white text-sm px-4 py-2 rounded-full shadow-md flex items-center gap-2"
     >
-      {apiCalled && (
-        <div className="absolute inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center">
-          <span className="relative flex h-16 w-16">
-            <span className="animate-spin rounded-full border-[6px] border-white/10 border-r-blue-400 w-full h-full" />
-          </span>
+      <ArrowLeft className="w-4 h-4" /> Back
+    </Button>
+  </div>
+
+  <div className="absolute top-5 right-4 z-50 flex gap-3">
+    <Button
+      onClick={removeTask}
+      className="bg-rose-500/20 hover:bg-rose-600/30 text-white text-sm px-4 py-2 rounded-full shadow-md flex items-center gap-2"
+    >
+      <Trash className="w-4 h-4" /> Remove
+    </Button>
+    <Button
+      onClick={handleUpdate}
+      disabled={!changesMade}
+      className="bg-green-500/20 hover:bg-green-600/30 text-white text-sm px-4 py-2 rounded-full shadow-md flex items-center gap-2"
+    >
+      <Save className="w-4 h-4" /> Save
+    </Button>
+  </div>
+
+  {/* Card */}
+  <div className="w-full max-w-4xl mt-24 mb-10 p-8 rounded-2xl shadow-2xl bg-[#1e293b] bg-opacity-90 border border-white/10 backdrop-blur-md space-y-8">
+    {/* Header */}
+    <div className="text-center space-y-2">
+      <div className="flex items-center justify-center text-2xl font-bold gap-2 text-white">
+        {typeIcon} Task Details
+      </div>
+      <div className="flex flex-wrap justify-center gap-2 text-sm text-white/60">
+        <span className="bg-white/10 px-3 py-1 rounded-full">Created: {created}</span>
+        <span className={`px-3 py-1 rounded-full font-semibold ${priority === "High"
+          ? "bg-red-500/30 text-red-200"
+          : priority === "Medium"
+          ? "bg-yellow-500/30 text-yellow-100"
+          : "bg-green-500/30 text-green-200"
+        }`}>
+          {priority} Priority
+        </span>
+        {tags.map((tag, i) => (
+          <span key={i} className="bg-white/10 px-3 py-1 rounded-full">#{tag}</span>
+        ))}
+      </div>
+    </div>
+
+    {/* Inputs */}
+    <div className="space-y-4">
+      <input
+        ref={title}
+        onChange={() => setChangesMade(true)}
+        placeholder="Title"
+        className="bg-[#273445] w-full px-5 py-3 rounded-xl border border-white/10 focus:ring-2 focus:ring-blue-400 outline-none text-xl font-semibold text-white placeholder-white/50"
+      />
+      <textarea
+        ref={desc}
+        onChange={() => setChangesMade(true)}
+        placeholder="Description..."
+        className="bg-[#273445] w-full px-5 py-3 rounded-xl border border-white/10 focus:ring-2 focus:ring-pink-400 outline-none resize-none text-white placeholder-white/50"
+        rows={3}
+      />
+    </div>
+
+    {/* Subtask Progress Bar */}
+    {Task?.subTasks?.length > 0 && (
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm text-white/60 font-mono">
+          <span>{completedCount}/{Task.subTasks.length} Completed</span>
+          <span>{Math.round((completedCount / Task.subTasks.length) * 100)}%</span>
         </div>
-      )}
-
-      {/* Floating Buttons */}
-      <div className="absolute top-4 left-2 md:left-4 z-50">
-        <Button
-          onClick={() => navigate(-1)}
-          variant="ghost"
-          className="rounded-full text-[3vw] md:text-xl px-2 py-1 md:px-4 md:py-2 bg-white/20 text-white shadow hover:bg-blue-400/30 transition"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1 md:mr-2 text-[3vw] md:text-xl" /> Back
-        </Button>
+        <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-green-400 to-blue-500 transition-all duration-300 ease-in-out"
+            style={{ width: `${(completedCount / Task.subTasks.length) * 100}%` }}
+          />
+        </div>
       </div>
-      <div className="absolute top-4 right-[2%] flex flex-row justify-center items-center gap-x-2 md:gap-x-5 z-50">
-        <Button
-          onClick={removeTask}
-          variant="ghost"
-          className="rounded-full text-[3vw] md:text-xl px-2 py-1 md:px-4 md:py-2 bg-white/20 text-white shadow hover:bg-rose-500/30 transition"
-        >
-          <Trash className="w-4 h-4 mr-2" /> Remove
-        </Button>
+    )}
 
-
-          <Button
-          disabled={!changesMade}
-          onClick={handleUpdate}
-          variant="ghost"
-          className="rounded-full px-2 py-1 md:px-4 md:py-2 text-[3vw] md:text-xl bg-white/20 text-white shadow hover:bg-green-400/30 transition"
+    {/* Subtasks */}
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <div className="flex flex-row justify-center items-center gap-x-2">
+            <span className="h-2 w-2 animate-ping bg-blue-500 rounded-full"></span>
+        <h4 className="text-lg font-semibold text-purple-300">Subtasks</h4>
+        </div>
+        <button
+          onClick={() => setShowModal(true)}
+          className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white text-sm font-medium hover:opacity-90 shadow-md transition-all"
         >
-          <Save className="w-4 h-4 mr-1 md:mr-2" /> Save Changes
-        </Button>
+          🔁 Generate Again with AI
+        </button>
       </div>
 
-      {/* Main Card */}
-      <div className="w-full max-w-4xl bg-[#111827] mt-24 mb-10 p-8 rounded-2xl shadow-xl border border-white/10 backdrop-blur-lg flex flex-col gap-8 max-h-[90vh] overflow-y-auto custom-scrollbar">
-        <div className="text-center text-white">
-          <div className="flex items-center justify-center gap-2 text-2xl font-bold">
-            {typeIcon} Task Details
-          </div>
-          <div className="mt-2 flex flex-wrap justify-center gap-2 text-sm text-white/70">
-            <span className="bg-white/10 px-3 py-1 rounded-full">
-              Created: {created}
-            </span>
-            <span
-              className={`px-3 py-1 rounded-full font-semibold ${
-                priority === "High"
-                  ? "bg-red-500/30 text-red-200"
-                  : priority === "Medium"
-                  ? "bg-yellow-500/30 text-yellow-100"
-                  : "bg-green-500/30 text-green-200"
-              }`}
+      <div className="grid gap-2">
+        {Task?.subTasks?.length ? (
+          Task.subTasks.map((subTask, i) => (
+            <label
+              key={i}
+              className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg border-l-4 border-blue-400 hover:bg-white/20 transition"
             >
-              {priority} Priority
-            </span>
-            {tags.map((tag, i) => (
-              <span key={i} className="bg-white/10 px-3 py-1 rounded-full">
-                #{tag}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Editable Fields */}
-        <div className="flex flex-col gap-4">
-          <input
-            ref={title}
-            onChange={() => setChangesMade(true)}
-            placeholder="Title"
-            className="bg-[#1e293b] text-white px-5 py-3 rounded-lg border border-blue-400/20 focus:ring-2 focus:ring-blue-500 outline-none text-xl font-semibold"
-          />
-          <textarea
-            ref={desc}
-            onChange={() => setChangesMade(true)}
-            placeholder="Description..."
-            className="bg-[#1e293b] text-white px-5 py-3 rounded-lg border border-pink-400/10 focus:ring-2 focus:ring-pink-400 outline-none text-base resize-none"
-            rows={3}
-          />
-        </div>
-
-        {/* Subtask Progress */}
-        {Task?.subTasks?.length > 0 && (
-          <div className="w-full">
-            <div className="flex justify-between text-white/70 text-xs font-mono mb-1">
-              <span>
-                {completedCount}/{Task.subTasks.length} Completed
-              </span>
-              <span>
-                {Math.round((completedCount / Task.subTasks.length) * 100)}%
-              </span>
-            </div>
-            <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-green-400"
-                style={{
-                  width: `${(completedCount / Task.subTasks.length) * 100}%`,
-                }}
+              <input
+                type="checkbox"
+                checked={updatedSubTask[i]?.completed}
+                onChange={(e) => handleCheck(e, i)}
+                disabled={completedCount >= Task.subTasks.length}
+                className="accent-green-500 scale-110 cursor-pointer"
               />
-            </div>
+              <span className={updatedSubTask[i]?.completed ? "line-through text-green-300" : ""}>
+                {subTask?.text}
+              </span>
+            </label>
+          ))
+        ) : (
+          <div className="text-center text-gray-400 text-sm">
+            No Subtasks Found
           </div>
         )}
-
-        {/* Subtasks */}
-        <div>
-          <div className="flex flex-row justify-between items-center">
-            <h4 className="text-lg font-semibold text-purple-400 mb-2 flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-gradient-to-br from-pink-500 to-blue-400" />
-              Subtasks
-            </h4>
- <button
-  onClick={() => setShowModal(true)}
-  className="w-full sm:w-auto text-center 
-             px-4 sm:px-5 py-2 sm:py-2.5 mb-2 
-             rounded-lg font-semibold 
-             text-white text-sm sm:text-base 
-             bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 
-             hover:from-blue-700 hover:via-purple-700 hover:to-pink-600 
-             transition-all duration-300 shadow-lg hover:shadow-xl 
-             focus:outline-none"
->
-  <span className="sm:hidden">🔁</span>
-  <span className="hidden sm:inline">🔁 Generate Again With AI</span>
-</button>
-
-
-          </div>
-
-          <div className="grid gap-2">
-            {Task?.subTasks?.length ? (
-              Task.subTasks.map((subTask, i) => (
-                <label
-                  key={i}
-                  className="bg-white/10 text-white px-4 py-2 rounded-lg flex items-center gap-3 border-l-4 border-blue-400 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                     checked={updatedSubTask[i]?.completed}
-                    onChange={(e) => handleCheck(e,i)}
-                    disabled={completedCount >= Task.subTasks.length}
-                    className="accent-green-500 scale-110"
-                  />
-                  <span>{subTask?.text}</span>
-                </label>
-              ))
-            ) : (
-              <div className="text-center text-gray-400 text-sm">
-                No Subtasks Found
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Modal */}
-        <Modal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          inputs={inputs}
-          setInputs={setInputs}
-          onSubmit={handleSubmit}
-        />
       </div>
-
-      <style>
-        {`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(255,255,255,0.2);
-          border-radius: 4px;
-        }
-        `}
-      </style>
     </div>
+
+    {/* Modal */}
+    <Modal
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+      inputs={inputs}
+      setInputs={setInputs}
+      onSubmit={handleSubmit}
+    />
+  </div>
+</div>
+
   );
 }
 
