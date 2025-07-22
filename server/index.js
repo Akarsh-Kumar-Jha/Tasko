@@ -17,10 +17,11 @@ const socketToNameMap = {};
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "https://tasko-frontendnew.onrender.com",
     credentials: true,
   },
 });
+
 
 io.on("connection", (Socket) => {
   console.log("A New Device Connected", Socket.id);
