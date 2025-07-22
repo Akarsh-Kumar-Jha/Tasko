@@ -6,7 +6,7 @@ import useAuth from "../hooks/useAuth";
 import { toast } from "sonner";
 import debounce from "lodash/debounce";
 
-const socket = io("http://localhost:3000");
+const socket = io("https://tasko-backendnew.onrender.com");
 
 const Canvas = () => {
   const store = useRef(createTLStore({ shapeUtils: defaultShapeUtils }));
