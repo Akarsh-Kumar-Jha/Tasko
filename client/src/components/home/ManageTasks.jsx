@@ -29,7 +29,8 @@ function ManageTasks() {
   const fetchTasks = async () => {
     setApiCalled(true)
     try {
-      const res = await axiosInstance.get('/')
+      const res = await axiosInstance.get('/');
+      console.log("Task Subtasks In Manage Tasks:- ",res.data?.tasks);
       const tasks = res.data?.tasks || []
       setAllTasks(tasks)
       setFilteredTasks(tasks)

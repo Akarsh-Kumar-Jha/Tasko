@@ -26,6 +26,7 @@ function Todo() {
   const desc = useRef();
 
   const [completedCount, setCompletedCount] = useState(0);
+  const [updatedSubTask,setUpdatedSubTask] = useState([]);
 
   // Modal States
   const [showModal, setShowModal] = useState(false);
@@ -50,8 +51,10 @@ function Todo() {
           timeZone: "Asia/Kolkata",
         })
       );
+      console.log("Inital SubTasks:- ",task?.subTasks);
       title.current.value = task?.title || "";
       desc.current.value = task?.description || "";
+      setUpdatedSubTask(task?.subTasks);
       setCompletedCount(task?.completedSubTasks || 0);
     } catch (error) {
       toast.error("Failed to fetch task.");
@@ -61,22 +64,28 @@ function Todo() {
   };
 
   const handleCheck = (event,index) => {
+    setChangesMade(true);
     const totalSubTasks = Task?.subTasks?.length || 0;
-
-    if (completedCount < totalSubTasks) {
-      if(event.target.checked){
-setCompletedCount((prev) => prev + 1);
+    const updated = [...updatedSubTask];
+        if(event.target.checked){
+          setCompletedCount(completedCount + 1);
+          console.log("Inside If Statement");
+    updated[index].completed = true;
       }else{
-        setCompletedCount((prev) => prev - 1);
+        setCompletedCount(completedCount - 1);
+        console.log("Inside else Statement");
+            updated[index].completed = false;
       }
-      setChangesMade(true);
-    }
+        console.log("Updated SubTask :- ",updated[index]?.completed);
+        setUpdatedSubTask(updated);
+        console.log("Final Updated SubTask :- ",updatedSubTask);
   };
 
   const handleUpdate = async () => {
     const updatedValue = {
       taskId: id,
       completedSubTasks: completedCount,
+      updatedSubTasks:updatedSubTask
     };
 
     if (title.current.value.trim())
@@ -87,6 +96,7 @@ setCompletedCount((prev) => prev + 1);
     try {
       setApiCalled(true);
       await axiosInstance.put("/updateTask", updatedValue);
+      GetTask();
       toast.success("✅ Task Updated Successfully!");
       setChangesMade(false);
     } catch (error) {
@@ -120,7 +130,7 @@ setCompletedCount((prev) => prev + 1);
       setApiCalled(true);
       await axiosInstance.delete(`/remove/${id}`);
       toast.success("🗑️ Task Removed Successfully!");
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       toast.error(error.response?.data?.message || "❌ Failed to remove task.");
     } finally {
@@ -289,14 +299,12 @@ setCompletedCount((prev) => prev + 1);
                 >
                   <input
                     type="checkbox"
+                     checked={updatedSubTask[i]?.completed}
                     onChange={(e) => handleCheck(e,i)}
                     disabled={completedCount >= Task.subTasks.length}
                     className="accent-green-500 scale-110"
                   />
-                  <span className="text-xs bg-pink-700/30 px-2 py-1 rounded font-semibold">
-                    {i + 1}
-                  </span>
-                  <span>{subTask}</span>
+                  <span>{subTask?.text}</span>
                 </label>
               ))
             ) : (

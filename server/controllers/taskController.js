@@ -57,11 +57,13 @@ Only return the numbered list — no extra explanation.
       .filter((line) => line.trim() !== "")
       .map((line) => line.replace(/^\d+\.\s*/, "").trim());
 
+      console.log("Subtasks Array:- ",textArray);
+
     const newTask = await Task.create({
       title,
       description,
       user: id,
-      subTasks: textArray,
+      subTasks: textArray?.map((item) => ({text:item})),
       priority: priority,
       tags: tags,
       type,
@@ -282,7 +284,7 @@ console.log("New SubTask :- ",parsedArray);
 
      const updatedTask = await Task.findByIdAndUpdate(
           taskId,
-          { subTasks: parsedArray },
+          { subTasks: parsedArray.map((item) => ({text:item})),completedSubTasks:0 },
           { new: true }
         );
 
@@ -379,7 +381,16 @@ options:{sort:{createdAt:-1}}
 
 exports.updateTask = async(req,res) => {
   try {
-    const {taskId,title,description,completedSubTasks} = req.body;
+    const {taskId,title,description,completedSubTasks,updatedSubTasks} = req.body;
+    const {id} = req.user;
+    if(!id){
+        return res.status(400).json({
+        success: false,
+        message: "User Not Authenticated!",
+      });
+    }
+   const completedArray =  updatedSubTasks.map((item) => (item.completed));
+    console.log("In Backend Completed Array:- ",completedArray);
     if(!taskId){
        return res.status(400).json({
       success:false,
@@ -397,43 +408,81 @@ exports.updateTask = async(req,res) => {
 
     const updatedFields = {};
     if(title.trim()) updatedFields.title = title.trim();
+    if( updatedSubTasks && updatedSubTasks.length > 0) updatedFields.subTasks = updatedSubTasks;
     if(description.trim()) updatedFields.description = description.trim();
     if(typeof completedSubTasks === "number") updatedFields.completedSubTasks = completedSubTasks;
     if(title.trim() || description.trim()){
-       const prompt = `
+const prompt = `
 You are an intelligent task assistant.
 
-Given a task with a title and description, break it down into 4 to 6 **actionable, concise subtasks**.
+Given a task with a title and description, break it down into 4 to 6 actionable, concise subtasks.
 
-### Format your response as:
-1. Subtask 1
-2. Subtask 2
-3. Subtask 3
-...
+🎯 Output Format:
+- Respond ONLY with a valid JavaScript array of strings.
+- The array must be returned on a single line.
+- DO NOT wrap the response in backticks, quotes, or code blocks.
+- DO NOT include any explanation or formatting.
+- Each string in the array should clearly state an individual subtask.
+
+✅ Example format:
+["Research feature", "Set up folder structure", "Write API", "Test endpoints"]
+
+🚫 Do not use line breaks, backticks, or markdown formatting.
+🚫 Do not say anything else except the array.
 
 ### Task Title:
 ${updatedFields.title || findTask.title}
 
 ### Task Description:
 ${updatedFields.description || findTask.description}
-
-Only return the numbered list — no extra explanation.
 `;
+
+
+
 
     const result = await model.generateContent(prompt);
     const geminiresponse = await result.response;
-    const text = geminiresponse.text();
+  const rawText = geminiresponse.text().trim();
 
-    const textArray = text
-      .split("\n")
-      .filter((line) => line.trim() !== "")
-      .map((line) => line.replace(/^\d+\.\s*/, "").trim());
+let cleanedText = rawText;
 
-      updatedFields.subTasks = textArray;
+if (Array.isArray(cleanedText)) {
+  cleanedText = cleanedText[0];
+}
+
+if (
+  cleanedText.startsWith("`") ||
+  cleanedText.startsWith('"') ||
+  cleanedText.startsWith("'")
+) {
+  cleanedText = cleanedText.slice(1, -1);
+}
+
+let subTaskStrings = [];
+try {
+  subTaskStrings = JSON.parse(cleanedText);
+} catch (err) {
+  console.error("Failed to parse Gemini subtasks:", err.message);
+}
+
+       updatedFields.subTasks = subTaskStrings.map((item,index) => ({text:item,completed:completedArray[index]}));
     }
     
 
     const updatedTask = await Task.findByIdAndUpdate(taskId,updatedFields,{new:true});
+
+    const userDetails = await User.findById(id).populate('tasks');
+
+      const userData = JSON.stringify({
+                 success: true,
+                message: "Successfully Fetched All Tasks!",
+                tasks: userDetails.tasks,
+                Image:userDetails.image,
+                Name:userDetails.name
+            });
+
+    await redis.del(id);
+    await redis.setex(id,150,userData);
 
     return res.status(200).json({
       success:true,

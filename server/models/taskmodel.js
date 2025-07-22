@@ -15,9 +15,14 @@ const taskSchema = new mongoose.Schema({
     minlength:10,
     maxlength:150
   },
-  subTasks: {
-    type: [String],
-    default: [],
+  subTasks:{
+    type:[
+      {
+        text:{type:String},
+        completed:{type:Boolean,default:false}
+      }
+    ],
+    default:[]
   },
   completedSubTasks: {
     type: Number,

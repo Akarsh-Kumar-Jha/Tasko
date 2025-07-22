@@ -34,6 +34,7 @@ console.log("response In Task Creation:- ",response);
       seType('Task');
     } catch (error) {
       toast.error('Failed to create task.');
+      console.log("response In Task Creation:- ",error);
     } finally {
       setApiCalled(false);
     }
