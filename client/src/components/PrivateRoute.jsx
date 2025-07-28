@@ -7,7 +7,7 @@ function PrivateRoute({ children }) {
 
   if (isAuthenticated === null) {
     return (
-      <div className="flex justify-center items-center h-screen bg-white dark:bg-[#121212] transition-colors duration-300">
+      <div className="flex justify-center items-center bg-[#121212] transition-colors duration-300">
         <div className="flex flex-col items-center gap-4">
           {/* Spinner */}
           <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
