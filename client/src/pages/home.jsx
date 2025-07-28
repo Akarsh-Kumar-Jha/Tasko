@@ -43,14 +43,6 @@ function Home() {
           </h1>
           <p className="text-sm mt-1 text-white/60">Manage your tasks with elegance ✨</p>
         </div>
-        <div
-          onClick={() => navigate('/canvas')}
-          className="animate-bounce transition-all duration-300"
-        >
-          <button className="px-4 sm:px-6 py-2 text-sm sm:text-base cursor-pointer backdrop-blur-md bg-white/10 text-white border border-white/30 rounded-full shadow-md hover:bg-white/20 transition duration-300 font-semibold tracking-wide">
-            Try Collaborative Whiteboard
-          </button>
-        </div>
       </div>
 
       {/* Main Content Area */}
