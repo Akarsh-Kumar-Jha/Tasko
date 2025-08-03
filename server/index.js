@@ -19,6 +19,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "https://tasko-frontendnew.onrender.com",
+      "https://taasko.netlify.app/",
       "http://localhost:5173"
     ],
     methods: ["GET", "POST"],
@@ -108,6 +109,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowedOrigins = [
+  "https://taasko.netlify.app/",
   "http://localhost:5173",
   "https://tasko-frontendnew.onrender.com",
   "https://tasko-frontend-p3y7.onrender.com"
