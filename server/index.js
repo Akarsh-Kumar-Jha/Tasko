@@ -109,7 +109,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowedOrigins = [
-  "https://taasko.netlify.app/",
+  "https://taasko.netlify.app",
   "http://localhost:5173",
   "https://tasko-frontendnew.onrender.com",
   "https://tasko-frontend-p3y7.onrender.com"
