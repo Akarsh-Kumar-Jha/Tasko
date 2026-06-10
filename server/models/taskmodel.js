@@ -9,12 +9,11 @@ const taskSchema = new mongoose.Schema({
     maxlength:100
   },
   description: {
-    type: String,
-    required: [true, "Description is required for task creation"],
-    trim: true,
-    minlength:10,
-    maxlength:150
-  },
+  type: String,
+  required: true,
+  trim: true,
+  minlength: 10
+},
   subTasks:{
     type:[
       {
